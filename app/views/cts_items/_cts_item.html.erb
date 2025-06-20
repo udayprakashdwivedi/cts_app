@@ -1,0 +1,27 @@
+<div id="<%= dom_id cts_item %>">
+  <p>
+    <strong>Technical data:</strong>
+    <%= cts_item.technical_data %>
+  </p>
+
+  <p>
+    <strong>Ordering information:</strong>
+    <%= cts_item.ordering_information %>
+  </p>
+
+  <p>
+    <strong>Connection data:</strong>
+    <%= cts_item.connection_data %>
+  </p>
+
+  <p>
+    <strong>Dimensions:</strong>
+    <%= cts_item.dimensions %>
+  </p>
+
+  <p>
+    <strong>Image:</strong>
+    <%= link_to cts_item.image.filename, cts_item.image if cts_item.image.attached? %>
+  </p>
+
+</div>

@@ -1,0 +1,99 @@
+<h1 class="mb-4">CTS Items</h1>
+
+<%= link_to 'New CTS Item', new_cts_item_path, class: "btn btn-primary mb-3" %>
+
+<table class="table table-bordered">
+    <thead class="table-dark">
+        <tr>
+            <th>Image</th>
+            <th>Technical Data</th>
+            <th>Ordering Info</th>
+            <th>Connection Data</th>
+            <th>Dimensions</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        <% @cts_items.each do |item| %>
+        <tr>
+            <td>
+                <% if item.image.attached? %>
+                <%= image_tag item.image, class: "img-thumbnail", width: 100 %>
+                <% else %>
+                N/A
+                <% end %>
+            </td>
+
+            <td>
+                <% begin %>
+                <% JSON.parse(item.technical_data || '{}').each do |k, v| %>
+                <div class="border p-1 mb-1 d-flex">
+                    <div class="col-6 border-end pe-2"><strong><%= k %></strong></div>
+                    <div class="col-6 ps-2"><%= v %></div>
+                </div>
+                <% end %>
+                <% rescue JSON::ParserError %>
+                <span class="text-danger">Invalid JSON</span>
+                <% end %>
+            </td>
+
+            <td>
+                <% begin %>
+                <table class="table table-sm table-bordered mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Cat No</th>
+                            <th>Description</th>
+                            <th>Pack</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% JSON.parse(item.ordering_information || '[]').each do |info| %>
+                        <tr>
+                            <td><%= info['cat_no'] %></td>
+                            <td><%= info['description'] %></td>
+                            <td><%= info['pack'] %></td>
+                        </tr>
+                        <% end %>
+                    </tbody>
+                </table>
+                <% rescue JSON::ParserError %>
+                <span class="text-danger">Invalid JSON</span>
+                <% end %>
+            </td>
+
+            <td>
+                <% begin %>
+                <% JSON.parse(item.connection_data || '{}').each do |k, v| %>
+                <div class="border p-1 mb-1 d-flex">
+                    <div class="col-6 border-end pe-2"><strong><%= k %></strong></div>
+                    <div class="col-6 ps-2"><%= v %></div>
+                </div>
+                <% end %>
+                <% rescue JSON::ParserError %>
+                <span class="text-danger">Invalid JSON</span>
+                <% end %>
+            </td>
+
+            <td>
+                <% begin %>
+                <% JSON.parse(item.dimensions || '{}').each do |k, v| %>
+                <div class="border p-1 mb-1 d-flex">
+                    <div class="col-6 border-end pe-2"><strong><%= k %></strong></div>
+                    <div class="col-6 ps-2"><%= v %></div>
+                </div>
+                <% end %>
+                <% rescue JSON::ParserError %>
+                <span class="text-danger">Invalid JSON</span>
+                <% end %>
+            </td>
+
+            <td>
+                <%= link_to 'Show', cts_item_path(item), class: "btn btn-info btn-sm mb-1" %>
+                <%= link_to 'Edit', edit_cts_item_path(item), class: "btn btn-warning btn-sm mb-1" %>
+                <%= button_to 'Delete', cts_item_path(item), method: :delete, class: "btn btn-danger btn-sm", form: { onsubmit: "return confirm('Are you sure you want to delete this item?');" } %>
+            </td>
+        </tr>
+        <% end %>
+    </tbody>
+</table>

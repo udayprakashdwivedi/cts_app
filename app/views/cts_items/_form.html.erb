@@ -1,0 +1,159 @@
+<% if cts_item.errors.any? %>
+<div class="alert alert-danger">
+    <h4><%= pluralize(cts_item.errors.count, "error") %> prohibited this item from being saved:</h4>
+    <ul>
+        <% cts_item.errors.full_messages.each do |message| %>
+        <li><%= message %></li>
+        <% end %>
+    </ul>
+</div>
+<% end %>
+
+
+<%= form_with(model: cts_item, local: true, html: { multipart: true }) do |form| %>
+
+<!-- Technical Data Fields -->
+<div id="technical_data_fields">
+    <label>Technical Data</label>
+    <% (cts_item.technical_data.is_a?(String) ? JSON.parse(cts_item.technical_data) : cts_item.technical_data || {}).each do |key, value| %>
+    <div class="row mb-2">
+        <div class="col"><input type="text" class="form-control key-input" value="<%= key %>" placeholder="Key" /></div>
+        <div class="col"><input type="text" class="form-control value-input" value="<%= value %>" placeholder="Value" /></div>
+        <div class="col-auto"><button type="button" class="btn btn-danger remove-field">X</button></div>
+    </div>
+    <% end %>
+</div>
+<button type="button" class="btn btn-secondary add-field-btn mb-3" data-target="technical_data_fields">+ Add More</button>
+<input type="hidden" name="cts_item[technical_data]" id="technical_data_input" />
+
+<!-- Ordering Info Fields -->
+<div id="ordering_information_fields">
+    <label>Ordering Information</label>
+    <% (cts_item.ordering_information.is_a?(String) ? JSON.parse(cts_item.ordering_information) : cts_item.ordering_information || []).each do |item| %>
+    <div class="row mb-2">
+        <div class="col"><input type="text" class="form-control cat_no-input" value="<%= item['cat_no'] %>" placeholder="Cat No" /></div>
+        <div class="col"><input type="text" class="form-control desc-input" value="<%= item['description'] %>" placeholder="Description" /></div>
+        <div class="col"><input type="text" class="form-control pack-input" value="<%= item['pack'] %>" placeholder="Pack" /></div>
+        <div class="col-auto"><button type="button" class="btn btn-danger remove-field">X</button></div>
+    </div>
+    <% end %>
+</div>
+<button type="button" class="btn btn-secondary add-ordering-btn mb-3">+ Add Ordering</button>
+<input type="hidden" name="cts_item[ordering_information]" id="ordering_information_input" />
+
+<!-- Connection Data -->
+<div id="connection_data_fields">
+    <label>Connection Data</label>
+    <% (cts_item.connection_data.is_a?(String) ? JSON.parse(cts_item.connection_data) : cts_item.connection_data || {}).each do |key, value| %>
+    <div class="row mb-2">
+        <div class="col"><input type="text" class="form-control key-input" value="<%= key %>" placeholder="Key" /></div>
+        <div class="col"><input type="text" class="form-control value-input" value="<%= value %>" placeholder="Value" /></div>
+        <div class="col-auto"><button type="button" class="btn btn-danger remove-field">X</button></div>
+    </div>
+    <% end %>
+</div>
+<button type="button" class="btn btn-secondary add-field-btn mb-3" data-target="connection_data_fields">+ Add Connection</button>
+<input type="hidden" name="cts_item[connection_data]" id="connection_data_input" />
+
+<!-- Dimensions -->
+<div id="dimensions_fields">
+    <label>Dimensions</label>
+    <% (cts_item.dimensions.is_a?(String) ? JSON.parse(cts_item.dimensions) : cts_item.dimensions || {}).each do |key, value| %>
+    <div class="row mb-2">
+        <div class="col"><input type="text" class="form-control key-input" value="<%= key %>" placeholder="Key" /></div>
+        <div class="col"><input type="text" class="form-control value-input" value="<%= value %>" placeholder="Value" /></div>
+        <div class="col-auto"><button type="button" class="btn btn-danger remove-field">X</button></div>
+    </div>
+    <% end %>
+</div>
+<button type="button" class="btn btn-secondary add-field-btn mb-3" data-target="dimensions_fields">+ Add Dimension</button>
+<input type="hidden" name="cts_item[dimensions]" id="dimensions_input" />
+
+<!-- Image Upload -->
+<div class="mb-3">
+    <%= form.label :image %>
+    <%= form.file_field :image, class: "form-control" %>
+    <% if cts_item.image.attached? %>
+    <div class="mt-2">
+        <strong>Current Image:</strong><br />
+        <%= image_tag(cts_item.image, class: "img-thumbnail", style: "max-height: 200px;") %>
+    </div>
+    <% end %>
+</div>
+
+<%= form.submit class: "btn btn-success" %>
+<% end %>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        function updateKeyValueJSON(wrapperId, hiddenInputId) {
+            const data = {};
+            document.querySelectorAll(`#${wrapperId} .row`).forEach((row) => {
+                const key = row.querySelector(".key-input")?.value.trim();
+                const value = row.querySelector(".value-input")?.value.trim();
+                if (key !== "") data[key] = value;
+            });
+            document.getElementById(hiddenInputId).value = JSON.stringify(data);
+        }
+
+        function updateOrderingJSON() {
+            const data = [];
+            document.querySelectorAll("#ordering_information_fields .row").forEach((row) => {
+                const cat = row.querySelector(".cat_no-input")?.value.trim();
+                const desc = row.querySelector(".desc-input")?.value.trim();
+                const pack = row.querySelector(".pack-input")?.value.trim();
+                if (cat || desc || pack) {
+                    data.push({
+                        cat_no: cat,
+                        description: desc,
+                        pack: pack
+                    });
+                }
+            });
+            document.getElementById("ordering_information_input").value = JSON.stringify(data);
+        }
+
+        document.querySelectorAll(".add-field-btn").forEach((btn) => {
+            btn.addEventListener("click", function() {
+                const target = this.dataset.target;
+                const html = `
+          <div class="row mb-2">
+            <div class="col"><input type="text" class="form-control key-input" placeholder="Key" /></div>
+            <div class="col"><input type="text" class="form-control value-input" placeholder="Value" /></div>
+            <div class="col-auto"><button type="button" class="btn btn-danger remove-field">X</button></div>
+          </div>`;
+                document.getElementById(target).insertAdjacentHTML("beforeend", html);
+            });
+        });
+
+        const orderingBtn = document.querySelector(".add-ordering-btn");
+        if (orderingBtn) {
+            orderingBtn.addEventListener("click", function() {
+                const html = `
+          <div class="row mb-2">
+            <div class="col"><input type="text" class="form-control cat_no-input" placeholder="Cat No" /></div>
+            <div class="col"><input type="text" class="form-control desc-input" placeholder="Description" /></div>
+            <div class="col"><input type="text" class="form-control pack-input" placeholder="Pack" /></div>
+            <div class="col-auto"><button type="button" class="btn btn-danger remove-field">X</button></div>
+          </div>`;
+                document.getElementById("ordering_information_fields").insertAdjacentHTML("beforeend", html);
+            });
+        }
+
+        document.addEventListener("click", function(e) {
+            if (e.target && e.target.classList.contains("remove-field")) {
+                e.target.closest(".row").remove();
+            }
+        });
+
+        const form = document.querySelector("form");
+        if (form) {
+            form.addEventListener("submit", function() {
+                updateKeyValueJSON("technical_data_fields", "technical_data_input");
+                updateKeyValueJSON("connection_data_fields", "connection_data_input");
+                updateKeyValueJSON("dimensions_fields", "dimensions_input");
+                updateOrderingJSON();
+            });
+        }
+    });
+</script>

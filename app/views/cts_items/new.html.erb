@@ -1,0 +1,11 @@
+<% content_for :title, "New cts item" %>
+
+<h1>New cts item</h1>
+
+<%= render "form", cts_item: @cts_item %>
+
+<br>
+
+<div>
+  <%= link_to "Back to cts items", cts_items_path %>
+</div>

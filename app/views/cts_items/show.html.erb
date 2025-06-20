@@ -1,0 +1,69 @@
+<h1>CTS Item Details</h1>
+
+<%= link_to 'Back to List', cts_items_path, class: "btn btn-secondary mb-3" %>
+<%= link_to 'Edit', edit_cts_item_path(@cts_item), class: "btn btn-primary mb-3 ms-2" %>
+
+<% if @cts_item.image.attached? %>
+<div class="mb-3">
+    <strong>Image:</strong><br>
+    <%= image_tag @cts_item.image, class: "img-fluid border", width: 300 %>
+</div>
+<% end %>
+
+<div class="row">
+    <div class="col-md-6">
+        <h4>Technical Data</h4>
+        <% JSON.parse(@cts_item.technical_data || '{}').each do |k, v| %>
+        <div class="border p-1 mb-1 d-flex">
+            <div class="col-6 border-end pe-2"><strong><%= k %></strong></div>
+            <div class="col-6 ps-2"><%= v %></div>
+        </div>
+        <% end %>
+    </div>
+
+    <div class="col-md-6">
+        <h4>Connection Data</h4>
+        <% JSON.parse(@cts_item.connection_data || '{}').each do |k, v| %>
+        <div class="border p-1 mb-1 d-flex">
+            <div class="col-6 border-end pe-2"><strong><%= k %></strong></div>
+            <div class="col-6 ps-2"><%= v %></div>
+        </div>
+        <% end %>
+    </div>
+</div>
+
+<hr>
+
+<div>
+    <h4>Dimensions</h4>
+    <% JSON.parse(@cts_item.dimensions || '{}').each do |k, v| %>
+    <div class="border p-1 mb-1 d-flex">
+        <div class="col-6 border-end pe-2"><strong><%= k %></strong></div>
+        <div class="col-6 ps-2"><%= v %></div>
+    </div>
+    <% end %>
+</div>
+
+<hr>
+
+<div>
+    <h4>Ordering Information</h4>
+    <table class="table table-bordered">
+        <thead class="table-light">
+            <tr>
+                <th>Cat No</th>
+                <th>Description</th>
+                <th>Pack</th>
+            </tr>
+        </thead>
+        <tbody>
+            <% JSON.parse(@cts_item.ordering_information || '[]').each do |info| %>
+            <tr>
+                <td><%= info['cat_no'] %></td>
+                <td><%= info['description'] %></td>
+                <td><%= info['pack'] %></td>
+            </tr>
+            <% end %>
+        </tbody>
+    </table>
+</div>
