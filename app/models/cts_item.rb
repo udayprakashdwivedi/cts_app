@@ -1,7 +1,10 @@
 class CtsItem < ApplicationRecord
   has_one_attached :image
 
-  validate :validate_json_data_presence
+  validates :technical_data, presence: true, uniqueness: true
+  validates :ordering_information, presence: true, uniqueness: true
+  validates :connection_data, presence: true, uniqueness: true
+  validates :dimensions, presence: true, uniqueness: true
 
   private
 
@@ -14,6 +17,7 @@ class CtsItem < ApplicationRecord
     if td.blank?
       errors.add(:technical_data, "must have at least one key-value pair")
     end
+
 
     if oi.blank?
       errors.add(:ordering_information, "must have at least one item")

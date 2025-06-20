@@ -53,6 +53,8 @@ class CtsItemsController < ApplicationController
   private
     def set_cts_item
       @cts_item = CtsItem.find(params[:id])
+    rescue ActiveRecord::RecordNotFound
+      redirect_to cts_items_path, alert: "cts items not found."
     end
 
     def cts_item_params
